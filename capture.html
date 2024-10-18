@@ -1,36 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-       <meta charset="utf-8">
-       <script type="text/javascript" src="https://df-prod.autocad360.com/jsapi/v4/Autodesk.AutoCAD.js"></script>
-       <title>Chụp nhanh màn hình</title>
-       <script>
-           function capturePreview()
-           {
-               Acad.Application.activedocument.capturePreview(200,200).then(success,error);
-           }
 
-           function success(encodedbmp)
-           {
-               var container = document.getElementById('imageContainer');
-               var img = document.createElement('img');
-               var src = "data:image/bmp;base64," + encodedbmp;
-               img.setAttribute('src', src);
-               img.setAttribute('id', 'previewImg');
-               container.appendChild(img);
-           }
+<head>
+  <meta charset="utf-8">
+  <script type="text/javascript" src="https://df-prod.autocad360.com/jsapi/v4/Autodesk.AutoCAD.js"></script>
+  <title>Chụp nhanh màn hình</title>
+  <script>
+    function capturePreview() {
+      Acad.Application.activedocument.capturePreview(200, 200).then(success, error);
+    }
 
-           function error()
-           {
-               alert("error");
-           }
-       </script>
-   </head>
-   <body>
-       <input type='button' onclick='window.location.reload()' value='Tải lại' style="display:inline"/>
-       <h1>Chụp nhanh màn hình</h1>
-       <input type='button' onclick='capturePreview()' value="Chụp"/>
-       <div id='imageContainer'></div>
-       <p></p>
-   </body>
+    function success(encodedbmp) {
+      var container = document.getElementById('imageContainer');
+      var img = document.createElement('img');
+      var src = "data:image/bmp;base64," + encodedbmp;
+      img.setAttribute('src', src);
+      img.setAttribute('id', 'previewImg');
+      container.appendChild(img);
+    }
+
+    function error() {
+      alert("error");
+    }
+    function veHCN() {
+      var firstPoint, secondPoint;
+
+      // Prompt for the user for the first point
+      var options = new Acad.PromptPointOptions("Specify the first point of the rectangle: ");
+      Acad.Editor.getPoint(options).then(onFirstPoint, error);
+
+      // If the first point was successful, prompt the user for a second point
+      function onFirstPoint(arg) {
+        var obj = arg;
+        firstPoint = obj.value;
+
+        // Prompt for the user for the second point
+        var options = new Acad.PromptPointOptions("Specify the opposite corner of the rectangle: ");
+        Acad.Editor.getPoint(options).then(onSecondPoint, error);
+      }
+
+      // If an error occurred, display a general error message
+      function error() {
+        alert("Invalid point specified.");
+      }
+
+      // If both points were successfully specified, then draw the rectangle
+      function onSecondPoint(arg) {
+        var obj = arg;
+        secondPoint = obj.value;
+
+        // Draw the rectangle
+        Acad.Editor.executeCommand("RECTANG", firstPoint.x + "," + firstPoint.y, "", secondPoint.x + "," + secondPoint.y);
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <input type='button' onclick='window.location.reload()' value='Tải lại' style="display:inline" />
+  <h1>Chụp nhanh màn hình</h1>
+  <input type='button' onclick='capturePreview()' value="Chụp" />
+  <div id='imageContainer'></div>
+  <input type='button' onclick='veHCN()' value="Vẽ hình chữ nhật" />
+  <p></p>
+</body>
+
 </html>
